@@ -7,9 +7,16 @@ import { LogInInterface } from "./interface/LogIn.interface";
 export const signUp = async (signUpDetails: SignUpInterface) => {
     try {
         const response = await axios.post(`${API_URI}/auth/signup`, signUpDetails);
-        return response.data;
-    } catch (error) {
-        console.error(error);
+        setCookie('access_token', response.data.access_token, { expires: 1 });
+        return { message: UserStatus.STATUS_OK };
+    } catch (error: any) {
+        switch (error.response.status) {
+            case 409:
+                return { message: UserStatus.EXIST };
+            default:
+                console.log(error);
+                return { message: UserStatus.ERROR };
+        } 
     }
 };
 

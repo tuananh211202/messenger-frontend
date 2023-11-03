@@ -1,13 +1,29 @@
-import { Button, Col, Form, Input, Row } from "antd";
+import { Button, Form, Input, Row, message } from "antd";
 import React from "react";
 import SendNowLogo from "../../Components/Logo";
 import "./index.css";
 import { innerBoxClassName, inputClassName } from "../LogIn";
+import { SignUpInterface } from "../../Middleware/interface/SignUp.interface";
+import { signUp } from "../../Middleware/api";
+import { UserStatus } from "../../Middleware/constants";
+import { useNavigate } from "react-router-dom";
 
 const SignUpPage = () => {
+  const navigate = useNavigate();
 
-  const onFinish = (value: any) => {
-    console.log(value);
+  const noSpaceValidation = (rule: any, value: string | string[]) => {
+    if (value && value.includes(' ')) {
+      return Promise.reject('Dòng văn bản không được chứa dấu cách.');
+    } else {
+      return Promise.resolve();
+    }
+  };
+
+  const onFinish = async (signUpDetails: SignUpInterface) => {
+    const data = await signUp(signUpDetails);
+    if(data?.message !== UserStatus.STATUS_OK){
+      message.error(data?.message);
+    } else navigate("/");
   }
 
   return (
@@ -85,36 +101,31 @@ const SignUpPage = () => {
                     {
                       required: true,
                       message: 'Please input your name!',
-                    }
+                    },
+                    { validator: noSpaceValidation }
                   ]}
                 >
                   <Input className={inputClassName} placeholder="display name" size="large" />
                 </Form.Item>
-                <Row className="w-full">
-                  <Col span={9}>
-                    {/* <UploadAvatar /> */}
-                  </Col>
-                  <Col span={15}>
-                    <Form.Item
-                      name="description"
-                      rules={[
-                        {
-                          min: 1,
-                          message: 'Please input your description!',
-                        },
-                        {
-                          required: true,
-                          message: 'Please input your description!',
-                        }
-                      ]}
-                    >
-                      <Input.TextArea 
-                        className="w-full bg-slate-100 rounded-sm resize-none-imp" 
-                        placeholder="description" size="large" rows={4} maxLength={66} 
-                      />
-                    </Form.Item>
-                  </Col>
-                </Row>
+               
+                <Form.Item
+                  name="description"
+                  rules={[
+                    {
+                      min: 1,
+                      message: 'Please input your description!',
+                    },
+                    {
+                      required: true,
+                      message: 'Please input your description!',
+                    }
+                  ]}
+                >
+                  <Input.TextArea 
+                    className="w-full bg-slate-100 rounded-sm resize-none-imp" 
+                    placeholder="description" size="large" rows={4} maxLength={66} 
+                  />
+                </Form.Item>
 
                 <Form.Item className="p-0 m-0">
                   <Button htmlType="submit" className="w-full border-none text-white bg-blue-400 font-semibold mb-6" size="large">

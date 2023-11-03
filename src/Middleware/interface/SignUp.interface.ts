@@ -3,5 +3,4 @@ export interface SignUpInterface {
     password: string;
     name: string;
     description: string;
-    avatar_link: string;
 }

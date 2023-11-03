@@ -14,7 +14,6 @@ const LogInPage = () => {
   const navigate = useNavigate();
 
   const onFinish = async (logInDetails: LogInInterface) => {
-    console.log(logInDetails);
     const data = await logIn(logInDetails);
     if(data.message !== UserStatus.STATUS_OK){
       message.error(data.message);

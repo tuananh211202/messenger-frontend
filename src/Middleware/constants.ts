@@ -7,3 +7,10 @@ export enum UserStatus {
     WRONG_PASSWORD = "Wrong password!",
     ERROR = "An error occurred!",
 };
+
+export enum CodeStatus {
+    STATUS_OK = "OK",
+    WRONG = "Wrong code!",
+    ERROR = "An error occurred!",
+    NOT_FOUND = "Not found code!"
+}

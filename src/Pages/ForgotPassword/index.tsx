@@ -1,14 +1,37 @@
-import { Button, Form, Input, Row } from "antd";
+import { Button, Form, Input, Row, Spin, message } from "antd";
 import React, { useState } from "react";
 import SendNowLogo from "../../Components/Logo";
 import { innerBoxClassName, inputClassName } from "../LogIn";
+import { getCode, getRole, recoveryPassword } from "../../Middleware/api";
+import { CodeStatus, UserStatus } from "../../Middleware/constants";
 
 const ForgetPasswordPage = () => {
   const [step, setStep] = useState(0);
+  const [isSending, setIsSending] = useState(false);
 
-  const onFinish = (value: any) => {
-    setStep((step + 1) % 4);
-    console.log(value);
+  const onFinish = async (value: any) => {
+    switch (step) {
+      case 0:
+        setIsSending(true);
+        const res1 = await getCode(value.username);
+        setIsSending(false);
+        if(res1.message !== UserStatus.STATUS_OK) message.error(res1.message);
+        else setStep((step + 1) % 4);
+        return;
+      case 1:
+        const res2 = await getRole(value.username, value.code);
+        if(res2.message !== CodeStatus.STATUS_OK) message.error(res2.message);
+        else setStep((step + 1) % 4);
+        return;
+      case 2:
+        const res3 = await recoveryPassword(value.password);
+        if(res3.message !== UserStatus.STATUS_OK) message.error(res3.message);
+        else setStep((step + 1) % 4);
+        return;
+      case 3:
+        setStep((step + 1) % 4);
+        return;
+    } 
   }
 
   return (
@@ -108,8 +131,8 @@ const ForgetPasswordPage = () => {
                 {
                   step < 3 ?
                   <Form.Item className="p-0 m-0">
-                    <Button htmlType="submit" className="w-full border-none text-white bg-blue-400 font-semibold mb-6" size="large">
-                      {step === 0 ? 'Send Code' : step === 1 ? 'Enter Code' : step === 2 ? 'Reset Password' : null}
+                    <Button htmlType="submit" disabled={isSending} className="w-full border-none text-white bg-blue-400 font-semibold mb-6" size="large">
+                      {step === 0 ? 'Send Code ' : step === 1 ? 'Enter Code' : step === 2 ? 'Reset Password' : null}&nbsp;<Spin spinning={isSending} />
                     </Button>
                   </Form.Item> : null
                 }
@@ -123,7 +146,9 @@ const ForgetPasswordPage = () => {
           style={{ borderWidth: "1px" }}
         >
           <Row className="w-fit text-base">
-            <a href="/login" className="text-slate-600 font-semibold">Back to Log In</a>
+            <a href={step < 2 ? "/login" : "/"} className="text-slate-600 font-semibold">
+              {step < 2 ? "Back to Log In" : "Go to homepage"}
+            </a>
           </Row>
         </Row>
       </Row>

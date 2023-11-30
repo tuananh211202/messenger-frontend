@@ -1,27 +1,29 @@
 import { Avatar } from 'antd';
-import React, { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useEffect, useState } from 'react';
+import { getCookie } from 'typescript-cookie';
 
 interface ImageUploaderProps {
   className?: string;
   imageSrc?: string;
+  action?: any;
+  isAvatar?: boolean;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = (props) => {
-  const { className, imageSrc } = props;
-  const [selectedImage, setSelectedImage] = useState<File | null>(null);
-  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const { className, imageSrc, action, isAvatar } = props;
+  const [preview, setPreview] = useState<string | null>(null);
+  const tempData = JSON.parse(getCookie('user') || "")?.name[0];
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setPreviewImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
+      action(file);
+    } 
   };
+
+  useEffect(() => {
+    if(imageSrc) setPreview(imageSrc);
+  }, [imageSrc]);
 
   return (
     <div className={className}>
@@ -30,16 +32,16 @@ const ImageUploader: React.FC<ImageUploaderProps> = (props) => {
           style={{
             width: '100%',
             height: '100%',
-            borderRadius: '50%',
+            borderRadius: isAvatar ? '50%' : '2%',
             border: '1px solid #ccc',
             position: 'relative',
             overflow: 'hidden',
           }}
         >
           {
-            (previewImage || imageSrc) ? (
+            preview ? (
               <img
-                src={previewImage ? previewImage : imageSrc}
+                src={preview}
                 alt="Preview"
                 style={{
                   width: '100%',
@@ -49,6 +51,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = (props) => {
               />
             ) : (
               <Avatar
+                shape={isAvatar ? "circle" : 'square'}
                 style={{ 
                   width: '100%',
                   height: '100%',
@@ -60,7 +63,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = (props) => {
                   fontWeight: '700'
                 }}
               >
-                U
+                {isAvatar ? tempData : '+'}
               </Avatar>
             )
           }

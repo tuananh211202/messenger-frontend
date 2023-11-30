@@ -26,6 +26,7 @@ interface User {
 const SearchBox = () => {
   const [users, setUsers] = useState<User[]>([]);
   const navigate = useNavigate();
+  const { sidebarDispatch } = useSidebarContext();
 
   const onSearch: SearchProps['onSearch'] = async (value, _e, info) => {
     const data = await findContainByName(value);
@@ -33,6 +34,11 @@ const SearchBox = () => {
       setUsers(data.data || []);
     }
   }
+
+  const handleClick = (name: string) => {
+    navigate(`/profile/${name}`);
+    sidebarDispatch({ type: "NAVIGATE" });
+  };
 
   useEffect(() => {
     console.log(users);
@@ -56,7 +62,7 @@ const SearchBox = () => {
               key={user.name}
               type="text" 
               className="my-2 w-full px-8 py-4 h-fit flex items-start rounded-none"
-              onClick={() => navigate(`/profile/${user.name}`)}
+              onClick={() => handleClick(user.name)}
             >
               {user.name}
             </Button>

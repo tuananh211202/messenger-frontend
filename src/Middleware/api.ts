@@ -224,3 +224,21 @@ export const deleteFriendRequest = async (name: string) => {
     }
 }
 
+export const uploadImage = async (data: any) => {
+  try {
+    const access_token = getCookie('access_token');
+    const response = await axios.post(`${API_URI}/image/upload`, data, {
+      headers: {
+        Authorization: `Bearer ${access_token}`
+      }
+    });
+    return { 
+      message: RequestStatus.STATUS_OK,
+      sublink: response.data.path
+    };
+  } catch (error: any) {
+    console.log(error);
+    return { message: RequestStatus.ERROR };
+  }
+}
+

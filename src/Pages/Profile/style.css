@@ -1,0 +1,23 @@
+.base-button {
+  padding: 6px 10px 6px 10px;
+  border-radius: 0.5rem;
+  font-weight: 500;
+}
+
+.normal-button {
+  background-color: #efefef;
+  color: black;
+}
+
+.normal-button:hover {
+  background-color: #dbdbdb;
+}
+
+.good-button {
+  background-color: #0095f6;
+  color: white;
+}
+
+.good-button:hover {
+  background-color: #0074cc;
+}

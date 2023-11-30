@@ -14,3 +14,8 @@ export enum CodeStatus {
     ERROR = "An error occurred!",
     NOT_FOUND = "Not found code!"
 }
+
+export enum RequestStatus {
+    STATUS_OK = "OK",
+    ERROR = "An error occurred!"
+}
